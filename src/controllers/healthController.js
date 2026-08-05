@@ -2,6 +2,8 @@ import pool from '../config/database.js';
 
 export async function getHealth(req, res) {
   try {
+    // Simple database connectivity check.
+    // SELECT 1 verifies that MySQL is reachable without depending on any tables
     await pool.query('SELECT 1');
 
     res.status(200).json({
