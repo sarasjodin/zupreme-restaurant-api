@@ -7,12 +7,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    depends_on:
-      mysql:
-        condition: service_healthy
-    networks:
-      - web
-      - zupreme-restaurant
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=web'
@@ -24,6 +18,13 @@ services:
 
       - 'traefik.http.routers.zupreme-restaurant-api.service=zupreme-restaurant-api'
       - 'traefik.http.services.zupreme-restaurant-api.loadbalancer.server.port=3000'
+    command: npm start
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - web
+      - zupreme-restaurant
 
   mysql:
     image: mysql:8.0
@@ -33,15 +34,15 @@ services:
       - .env
     volumes:
       - zupreme_restaurant_mysql_data:/var/lib/mysql
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      - ./database/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/02-seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
     networks:
       - zupreme-restaurant
     healthcheck:
       test:
         [
           'CMD-SHELL',
-          'mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD --silent'
+          'mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD --silent',
         ]
       interval: 5s
       timeout: 5s
