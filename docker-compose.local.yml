@@ -1,0 +1,51 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    container_name: zupreme-restaurant-api-local
+    restart: unless-stopped
+    env_file:
+      - .env.local
+    ports:
+      - "3001:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - zupreme-restaurant-local
+
+  mysql:
+    image: mysql:8.0
+    container_name: zupreme-restaurant-mysql-local
+    restart: unless-stopped
+    env_file:
+      - .env.local
+    ports:
+      - "3308:3306"
+    volumes:
+      - zupreme_restaurant_mysql_data_local:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    networks:
+      - zupreme-restaurant-local
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD --silent"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+volumes:
+  zupreme_restaurant_mysql_data_local:
+
+networks:
+  zupreme-restaurant-local:
+    driver: bridge
