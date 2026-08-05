@@ -8,10 +8,11 @@ services:
     env_file:
       - .env.local
     ports:
-      - "3001:3000"
+      - '3001:3000'
     volumes:
       - .:/app
       - /app/node_modules
+    command: npm run dev
     depends_on:
       mysql:
         condition: service_healthy
@@ -25,11 +26,11 @@ services:
     env_file:
       - .env.local
     ports:
-      - "3308:3306"
+      - '3308:3306'
     volumes:
       - zupreme_restaurant_mysql_data_local:/var/lib/mysql
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      - ./database/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/02-seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
     networks:
       - zupreme-restaurant-local
     healthcheck:
