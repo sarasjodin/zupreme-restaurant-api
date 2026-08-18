@@ -10,15 +10,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - Placeholder for upcoming changes and planned features
 - Step 1. Continue developing GET endpoints:
-    - GET /api/menu-items
-    - GET /api/menu-items/:id
-    - GET /api/menu-items?include_unavailable=true
 - Step 2. Public messages and server validation
     - POST /api/messages
 - Step 3. Authentication
     - POST /api/auth/login
     - GET /api/auth/me
 - Step 4. First protected CRUD flow
+    - GET /api/menu-items?include_unavailable=true
     - POST /api/menu-items
     - PATCH /api/menu-items/:id
     - DELETE /api/menu-items/:id
@@ -33,6 +31,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
     - GET /api/users/:id
     - POST /api/users
     - PATCH /api/users/:id
+
+
+## [0.2.0] - 2026-08-18
+
+### Added
+
+- public GET /api/menu-items endpoint
+- public GET /api/menu-items/:id endpoint
 
 ---
 
