@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import healthRoutes from './routes/healthRoutes.js';
+import menuCategoryRoutes from './routes/menuCategoryRoutes.js';
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(
 app.use(express.json());
 
 app.use('/api/health', healthRoutes);
+app.use('/api/menu-categories', menuCategoryRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
