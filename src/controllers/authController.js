@@ -110,9 +110,58 @@ export async function login(req, res) {
 }
 
 export async function getCurrentUser(req, res) {
-  // Input: autentiserad användare från giltig JWT
+  // Input: autentiserad användare från verifierad JWT
   // Returnera: id, name, email, role, is_active
   // Aktuell tabell? users
   // Filter: aktuell autentiserad användares ID
   // Statuskoder? 200, 401, 500 (GET)
+  try {
+    // req.user skapas av requireAuth() middleware
+    // och innehåller JWT-payloaden id och role (se login() ovan)
+    const userId = req.user?.id;
+
+    // Extra skydd om req.user eller id trots allt saknas
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Hämtar aktuell användare från databasen med ID från JWT
+    const [rows] = await pool.query(
+      `
+      SELECT
+        id,
+        name,
+        email,
+        role,
+        is_active
+      FROM users
+      WHERE id = ?
+    `,
+      [userId],
+    );
+
+    // Token kan fortfarande vara giltig även om användaren
+    // senare har tagits bort eller gjorts inaktiv
+    if (rows.length === 0 || !rows[0].is_active) {
+      return res.status(401).json({
+        error: 'Unauthorized',
+      });
+    }
+
+    const user = rows[0];
+
+    return res.status(200).json({
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        is_active: Boolean(user.is_active),
+      },
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 }
