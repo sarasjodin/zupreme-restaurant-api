@@ -22,7 +22,7 @@ export async function getMenuItems(req, res) {
       FROM menu_items mi
       JOIN menu_categories mc ON mi.category_id = mc.id
       WHERE mi.is_available = TRUE
-      ORDER BY mc.name, mi.sort_order
+      ORDER BY mc.sort_order, mi.sort_order
     `);
 
     res.status(200).json(rows);
@@ -76,22 +76,3 @@ export async function getMenuItemById(req, res) {
     res.status(500).json({ error: 'Internal server error' });
   }
 }
-
-/* CREATE TABLE IF NOT EXISTS menu_items (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    category_id INT NOT NULL,
-    name VARCHAR(150) NOT NULL UNIQUE,
-    description TEXT,
-    serving VARCHAR(50) NOT NULL DEFAULT 'Portion',
-    price DECIMAL(8, 2) NOT NULL,
-    is_available BOOLEAN NOT NULL DEFAULT TRUE,
-    sort_order INT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-        ON UPDATE CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_menu_items_category
-        FOREIGN KEY (category_id)
-        REFERENCES menu_categories(id)
-); */
-
