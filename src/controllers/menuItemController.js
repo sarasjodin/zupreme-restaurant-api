@@ -50,12 +50,13 @@ export async function getMenuItemById(req, res) {
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id) || id <= 0) {
-        return res.status(400).json({
-            error: 'Invalid menu item ID',
-        });
+      return res.status(400).json({
+        error: 'Invalid menu item ID',
+      });
     }
 
-    const [rows] = await pool.query(`
+    const [rows] = await pool.query(
+      `
     SELECT
         mi.id,
         mi.category_id,
@@ -68,8 +69,10 @@ export async function getMenuItemById(req, res) {
         mi.sort_order
       FROM menu_items mi
       JOIN menu_categories mc ON mi.category_id = mc.id
-      WHERE mi.id = ?
-    `, [id]);
+      WHERE mi.id = ? AND mi.is_available = TRUE
+    `,
+      [id],
+    );
 
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Menu item not found' });
