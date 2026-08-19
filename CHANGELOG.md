@@ -9,9 +9,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 
 - Placeholder for upcoming changes and planned features
-- Step 1. Continue developing GET endpoints:
-- Step 2. Public messages and server validation
-    - POST /api/messages
 - Step 3. Authentication
     - POST /api/auth/login
     - GET /api/auth/me
@@ -32,6 +29,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
     - POST /api/users
     - PATCH /api/users/:id
 
+## [0.3.0] - 2026-08-19
+
+### Added
+
+- public POST /api/messages
+- error handling to prevent invalid json body text
 
 ## [0.2.0] - 2026-08-18
 
