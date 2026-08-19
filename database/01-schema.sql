@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS menu_items (
     name VARCHAR(150) NOT NULL UNIQUE,
     description VARCHAR(1000),
     serving VARCHAR(50) NOT NULL DEFAULT 'Portion',
-    price DECIMAL(8, 2) NOT NULL,
+    price DECIMAL(6, 2) NOT NULL,
     is_available BOOLEAN NOT NULL DEFAULT TRUE,
     sort_order INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
