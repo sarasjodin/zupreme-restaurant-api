@@ -5,9 +5,14 @@ export async function getMenuItems(req, res) {
   //            serving, price, is_available, sort_order
   // Tabeller: menu_items + menu_categories
   // Filtrering: endast tillgängliga menyartiklar som standard
+  // Om include_unavailable=true returneras även otillgängliga artiklar
   // Sortering: kategori och sort_order
   // Statuskoder: 200, 500
   try {
+    // Kontrollera om query-parametern include_unavailable är 'true'
+    const includeUnavailable = req.query.include_unavailable === 'true';
+
+    // Om includeUnavailable === true makes WHERE disappear otherwise filter by is_available = TRUE
     const [rows] = await pool.query(`
       SELECT
         mi.id,
@@ -21,7 +26,7 @@ export async function getMenuItems(req, res) {
         mi.sort_order
       FROM menu_items mi
       JOIN menu_categories mc ON mi.category_id = mc.id
-      WHERE mi.is_available = TRUE
+      ${includeUnavailable ? '' : 'WHERE mi.is_available = TRUE'}
       ORDER BY mc.sort_order, mi.sort_order
     `);
 
@@ -75,4 +80,16 @@ export async function getMenuItemById(req, res) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
+}
+
+export async function createMenuItem(req, res) {
+  // Implementation here
+}
+
+export async function updateMenuItemById(req, res) {
+  // Implementation here
+}
+
+export async function deleteMenuItemById(req, res) {
+  // Implementation here
 }
