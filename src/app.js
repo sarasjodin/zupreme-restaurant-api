@@ -4,6 +4,7 @@ import healthRoutes from './routes/healthRoutes.js';
 import menuItemRoutes from './routes/menuItemRoutes.js';
 import menuCategoryRoutes from './routes/menuCategoryRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/health', healthRoutes);
 app.use('/api/menu-categories', menuCategoryRoutes);
 app.use('/api/menu-items', menuItemRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/auth', authRoutes);
 
 // SyntaxError - JSON kunde inte tolkas
 app.use((err, req, res, next) => {
