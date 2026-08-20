@@ -15,10 +15,10 @@ export async function getMenuCategories(req, res) {
       ORDER BY sort_order ASC
     `);
 
-    res.status(200).json(rows);
+    return res.status(200).json(rows);
   } catch (error) {
     console.error('Could not fetch menu categories:', error.message);
 
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }

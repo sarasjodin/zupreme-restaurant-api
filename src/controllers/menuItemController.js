@@ -37,11 +37,11 @@ export async function getMenuItems(req, res) {
       ORDER BY mc.sort_order, mi.sort_order
     `);
 
-    res.status(200).json(rows.map(formatMenuItem));
+    return res.status(200).json(rows.map(formatMenuItem));
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
 
@@ -79,10 +79,10 @@ export async function getMenuItemById(req, res) {
       return res.status(404).json({ error: 'Menu item not found' });
     }
 
-    res.status(200).json(formatMenuItem(rows[0]));
+    return res.status(200).json(formatMenuItem(rows[0]));
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
 
