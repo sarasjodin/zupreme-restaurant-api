@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS messages (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(254) NOT NULL,
     subject VARCHAR(150) NOT NULL,
-    message TEXT NOT NULL,
+    message VARCHAR(1000) NOT NULL,
     status ENUM('unread', 'read', 'handled') NOT NULL DEFAULT 'unread',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
