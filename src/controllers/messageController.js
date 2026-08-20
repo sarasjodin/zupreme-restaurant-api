@@ -96,3 +96,11 @@ export async function createMessage(req, res) {
     });
   }
 }
+
+export async function getMessages(req, res) {} // Not yet implemented
+
+export async function getMessageById(req, res) {} // Not yet implemented
+
+export async function updateMessageById(req, res) {} // Not yet implemented
+
+export async function deleteMessageById(req, res) {} // Not yet implemented
