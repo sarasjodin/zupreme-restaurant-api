@@ -9,22 +9,30 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 
 - Placeholder for upcoming changes and planned features
-- Step 4. First protected CRUD flow
-    - GET /api/menu-items?include_unavailable=true
-    - POST /api/menu-items
-    - PATCH /api/menu-items/:id
-    - DELETE /api/menu-items/:id
-- Step 5. Messages
-    - GET /api/messages
-    - GET /api/messages/:id
-    - GET /api/messages?status=unread
-    - PATCH /api/messages/:id
-    - DELETE /api/messages/:id
-- Step 6. Users & Roles
-    - GET /api/users
-    - GET /api/users/:id
-    - POST /api/users
-    - PATCH /api/users/:id
+
+- Step 5. Messages where endpoints require authentication with a valid JWT:
+  - GET /api/messages
+  - GET /api/messages/:id
+  - GET /api/messages?status=unread
+  - PATCH /api/messages/:id
+  - DELETE /api/messages/:id
+- Step 6. Users & Roles for role-based "admin only"
+  - GET /api/users
+  - GET /api/users/:id
+  - POST /api/users
+  - PATCH /api/users/:id
+
+---
+
+## [0.5.0] - 2026-08-20
+
+### Added
+
+- First protected CRUD flow where endpoints require authentication with a valid JWT:
+  - GET /api/menu-items?include_unavailable=true
+  - POST /api/menu-items
+  - PATCH /api/menu-items/:id
+  - DELETE /api/menu-items/:id
 
 ---
 
@@ -32,10 +40,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
-Authentication endpoints:
-    - public POST /api/auth/login
-    - protected GET /api/auth/me
-    - including `authMiddleware.js` with `export function requireAuth()`
+- Authentication endpoints:
+  - public POST /api/auth/login
+  - protected GET /api/auth/me
+  - including `authMiddleware.js` with `export function requireAuth()`
 
 ---
 

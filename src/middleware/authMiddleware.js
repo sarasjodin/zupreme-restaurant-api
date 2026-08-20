@@ -36,3 +36,13 @@ export function requireAuth(req, res, next) {
     });
   }
 }
+
+// Middleware för att kräva autentisering endast när
+// query-parametern include_unavailable är 'true'
+export function requireAuthForUnavailable(req, res, next) {
+  if (req.query.include_unavailable === 'true') {
+    return requireAuth(req, res, next);
+  }
+
+  next();
+}
