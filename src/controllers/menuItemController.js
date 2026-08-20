@@ -104,7 +104,8 @@ export async function createMenuItem(req, res) {
   // Statuskoder: 201, 400, 409, 500
 
   try {
-    // Använder tomt objekt om req.body saknas
+    // req.body är redan validerad av validateCreateMenuItem middleware
+    // kan ej vara tom nu
     const {
       name,
       description = null,
@@ -113,7 +114,7 @@ export async function createMenuItem(req, res) {
       is_available = true,
       sort_order = 0,
       category_id,
-    } = req.body ?? {};
+    } = req.body;
 
     // Kontrollerar om category_id finns i menu_categories innan en menyartikel försöker skapas
     const [categories] = await pool.query(
@@ -362,10 +363,9 @@ export async function deleteMenuItemById(req, res) {
     const id = req.menuItemId;
 
     // Raderar menyartikeln från databasen
-    const [result] = await pool.query(
-      'DELETE FROM menu_items WHERE id = ?',
-      [id],
-    );
+    const [result] = await pool.query('DELETE FROM menu_items WHERE id = ?', [
+      id,
+    ]);
 
     // Kontrollerar om någon menyartikel raderades
     if (result.affectedRows === 0) {
