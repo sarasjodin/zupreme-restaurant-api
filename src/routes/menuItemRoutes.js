@@ -10,7 +10,11 @@ import {
   requireAuth,
   requireAuthForUnavailable,
 } from '../middleware/authMiddleware.js';
-import { validateMenuItemId, validateCreateMenuItem } from '../middleware/menuItemValidationMiddleware.js';
+import {
+  validateMenuItemId,
+  validateCreateMenuItem,
+  validateUpdateMenuItem,
+} from '../middleware/menuItemValidationMiddleware.js';
 
 const router = Router();
 
@@ -20,7 +24,13 @@ router.get('/:id', validateMenuItemId, getMenuItemById);
 
 // Authenticated routes
 router.post('/', requireAuth, validateCreateMenuItem, createMenuItem);
-router.patch('/:id', requireAuth, validateMenuItemId, updateMenuItemById); // Not implemented yet
+router.patch(
+  '/:id',
+  requireAuth,
+  validateMenuItemId,
+  validateUpdateMenuItem,
+  updateMenuItemById,
+);
 router.delete('/:id', requireAuth, validateMenuItemId, deleteMenuItemById); // Not implemented yet
 
 export default router;
