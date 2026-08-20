@@ -354,6 +354,33 @@ export async function updateMenuItemById(req, res) {
   }
 }
 
+// Raderar en menyartikel baserat på ID
+// Validering av ID sker i validateMenuItemId
 export async function deleteMenuItemById(req, res) {
-  // Implementation here
+  try {
+    // Hämtar validerat menu item ID från middleware
+    const id = req.menuItemId;
+
+    // Raderar menyartikeln från databasen
+    const [result] = await pool.query(
+      'DELETE FROM menu_items WHERE id = ?',
+      [id],
+    );
+
+    // Kontrollerar om någon menyartikel raderades
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        error: 'Menu item not found',
+      });
+    }
+
+    // Returnerar 204 utan innehåll vid radering
+    return res.status(204).send();
+  } catch (error) {
+    console.error('Could not delete menu item:', error.message);
+
+    return res.status(500).json({
+      error: 'Internal server error',
+    });
+  }
 }

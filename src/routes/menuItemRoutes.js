@@ -31,6 +31,6 @@ router.patch(
   validateUpdateMenuItem,
   updateMenuItemById,
 );
-router.delete('/:id', requireAuth, validateMenuItemId, deleteMenuItemById); // Not implemented yet
+router.delete('/:id', requireAuth, validateMenuItemId, deleteMenuItemById);
 
 export default router;
