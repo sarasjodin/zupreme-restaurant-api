@@ -10,16 +10,17 @@ import {
   requireAuth,
   requireAuthForUnavailable,
 } from '../middleware/authMiddleware.js';
+import { validateMenuItemId, validateCreateMenuItem } from '../middleware/menuItemValidationMiddleware.js';
 
 const router = Router();
 
 // Public routes
 router.get('/', requireAuthForUnavailable, getMenuItems); // * Public by default...but authenticated when ?include_unavailable=true is used
-router.get('/:id', getMenuItemById);
+router.get('/:id', validateMenuItemId, getMenuItemById);
 
 // Authenticated routes
-router.post('/', requireAuth, createMenuItem);
-router.patch('/:id', requireAuth, updateMenuItemById);
-router.delete('/:id', requireAuth, deleteMenuItemById);
+router.post('/', requireAuth, validateCreateMenuItem, createMenuItem);
+router.patch('/:id', requireAuth, validateMenuItemId, updateMenuItemById); // Not implemented yet
+router.delete('/:id', requireAuth, validateMenuItemId, deleteMenuItemById); // Not implemented yet
 
 export default router;

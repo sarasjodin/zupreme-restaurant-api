@@ -47,13 +47,7 @@ export async function getMenuItemById(req, res) {
   // Statuskoder: 200, 400, 404, 500
 
   try {
-    const id = Number(req.params.id);
-
-    if (!Number.isInteger(id) || id <= 0) {
-      return res.status(400).json({
-        error: 'Invalid menu item ID',
-      });
-    }
+    const id = req.menuItemId; // Validerad ID från validateMenuItemId
 
     const [rows] = await pool.query(
       `
@@ -86,28 +80,21 @@ export async function getMenuItemById(req, res) {
 }
 
 export async function createMenuItem(req, res) {
-  // Input: req.body.name, req.body.description, req.body.serving, req.body.price,
-  //  req.body.is_available, req.body.sort_order, req.body.category_id
+  // Input: Validerad från validateCreateMenuItem
   // Obligatoriska: name, price, category_id
   // Valfria:
   //   description = null
   //   serving = 'Portion'
   //   is_available = true
   //   sort_order = 0
-  // Returnera: id, category_id, category_name, name, description,
-  //  serving, price, is_available, sort_order, created_at
-  // Tabeller: menu_items och menu_categories
-  // Statuskoder: 201, 400, 409, 500 (POST)
-  // Validering: name (150), description VARCHAR(1000), serving (50),
-  //  price DECIMAL(6, 2), is_available BOOLEAN, sort_order, category_id
-  //   - obligatoriska fält som måste finnas
-  //   - inte vara tomma
-  //   - rätt typ
-  //   - max antal tecken
-  //   - prisintervall 0-9999.99
-  //   - mm
-  //  - category_id måste finnas i menu_categories
-  //  - NB! name i menu_items UNIQUE
+  //
+  // Controller ansvarar för:
+  //   - kontroll att category_id finns i menu_categories
+  //   - kontroll att name inte redan finns i menu_items
+  //   - skapa menyartikeln
+  //   - hämta och returnera den skapade menyartikeln
+  //
+  // Statuskoder: 201, 400, 409, 500
 
   try {
     // Använder tomt objekt om req.body saknas
@@ -120,96 +107,6 @@ export async function createMenuItem(req, res) {
       sort_order = 0,
       category_id,
     } = req.body ?? {};
-
-    if (
-      name === undefined ||
-      price === undefined ||
-      category_id === undefined
-    ) {
-      return res.status(400).json({
-        error:
-          'Missing required fields: name, price, and category_id are required',
-      });
-    }
-
-    // Validering av obligatoriska fält
-    if (typeof name !== 'string' || !name.trim()) {
-      return res.status(400).json({
-        error: 'Name is required and must be a non-empty string',
-      });
-    }
-
-    if (name.trim().length > 150) {
-      return res.status(400).json({
-        error: 'Name must not exceed 150 characters',
-      });
-    }
-
-    // Verifierar om price verkligen är av typen number
-    // samt att det är ett giltigt tal (inte NaN eller Infinity)
-    if (typeof price !== 'number' || !Number.isFinite(price)) {
-      return res.status(400).json({
-        error: 'Price is required and must be a valid number',
-      });
-    }
-
-    // Verifierar prisintervallet
-    if (price < 0 || price > 9999.99) {
-      return res.status(400).json({
-        error: 'Price must be between 0 and 9999.99',
-      });
-    }
-
-    if (typeof category_id !== 'number' || !Number.isInteger(category_id)) {
-      return res.status(400).json({
-        error: 'Category ID is required and must be an integer',
-      });
-    }
-
-    if (category_id <= 0) {
-      return res.status(400).json({
-        error: 'Category ID must be a positive integer',
-      });
-    }
-
-    // Description är valfri men null som defaultvärde
-    if (description !== null && typeof description !== 'string') {
-      return res.status(400).json({
-        error: 'Description must be a string',
-      });
-    }
-
-    if (description !== null && description.trim().length > 1000) {
-      return res.status(400).json({
-        error: 'Description must not exceed 1000 characters',
-      });
-    }
-
-    // Serving har defaultvärdet "Portion"
-    if (typeof serving !== 'string' || !serving.trim()) {
-      return res.status(400).json({
-        error: 'Serving must be a non-empty string',
-      });
-    }
-
-    if (serving.trim().length > 50) {
-      return res.status(400).json({
-        error: 'Serving must not exceed 50 characters',
-      });
-    }
-
-    if (typeof is_available !== 'boolean') {
-      return res.status(400).json({
-        error: 'Is available must be a boolean',
-      });
-    }
-
-    // Verifierar att sort_order INTE är ett heltal eller är negativt
-    if (!Number.isInteger(sort_order) || sort_order < 0) {
-      return res.status(400).json({
-        error: 'Sort order must be a non-negative integer',
-      });
-    }
 
     // Kontrollerar om category_id finns i menu_categories innan en menyartikel försöker skapas
     const [categories] = await pool.query(
