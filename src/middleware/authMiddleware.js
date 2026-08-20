@@ -1,4 +1,36 @@
 import jwt from 'jsonwebtoken';
+import { isValidEmail } from '../utils/validationUtils.js';
+
+// Validerar e-postadress och password vid autentisering
+export function validateLogin(req, res, next) {
+  // Använder tomt objekt om req.body saknas
+  const { email, password } = req.body ?? {};
+
+  // Validering: email, password måste finnas och inte vara tomma
+  if (
+    typeof email !== 'string' ||
+    typeof password !== 'string' ||
+    !email.trim() ||
+    !password // Password kan innehålla whitespace
+  ) {
+    return res.status(400).json({ error: 'Email and password are required' });
+  }
+
+  if (email.trim().length > 254) {
+    return res.status(400).json({
+      error: 'Email must not exceed 254 characters',
+    });
+  }
+
+  // Validerar e-postadressens format med gemensam hjälpfunktion
+  if (!isValidEmail(email)) {
+    return res.status(400).json({
+      error: 'Invalid email address',
+    });
+  }
+
+  next();
+}
 
 // Validate JWT token middleware
 export function requireAuth(req, res, next) {

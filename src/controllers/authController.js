@@ -12,38 +12,9 @@ export async function login(req, res) {
   // Roll: admin, editor
 
   try {
-    // Använder tomt objekt om req.body saknas
-    const { email, password } = req.body ?? {};
-    // Validering: email, password måste finnas och inte vara tomma
-    if (
-      typeof email !== 'string' ||
-      typeof password !== 'string' ||
-      !email.trim() ||
-      !password // Password might include spaces
-    ) {
-      return res.status(400).json({ error: 'Email and password are required' });
-    }
-
-    if (email.trim().length > 254) {
-      return res.status(400).json({
-        error: 'Email must not exceed 254 characters',
-      });
-    }
-
-    // Validering av e-postadressens format
-    const emailParts = email.trim().split('@');
-
-    if (
-      emailParts.length !== 2 ||
-      !emailParts[0] ||
-      !emailParts[1].includes('.') ||
-      emailParts[1].startsWith('.') ||
-      emailParts[1].endsWith('.')
-    ) {
-      return res.status(400).json({
-        error: 'Invalid email address',
-      });
-    }
+    // Hämtar redan validerad login-data från request body
+    // req.body valideras av validateLogin middleware
+    const { email, password } = req.body;
 
     const [rows] = await pool.query(
       `
@@ -148,6 +119,8 @@ export async function getCurrentUser(req, res) {
       });
     }
 
+    // Användaren finns och är aktiv
+    // returnera användarens information
     const user = rows[0];
 
     return res.status(200).json({
