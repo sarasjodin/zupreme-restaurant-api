@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS menu_items (
     category_id INT NOT NULL,
     name VARCHAR(150) NOT NULL UNIQUE,
     description VARCHAR(1000),
+    image_path VARCHAR(255) NULL,
     serving VARCHAR(50) NOT NULL DEFAULT 'Portion',
     price DECIMAL(6, 2) NOT NULL,
     is_available BOOLEAN NOT NULL DEFAULT TRUE,
