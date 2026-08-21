@@ -10,17 +10,24 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - Placeholder for upcoming changes and planned features
 
-- Step 5. Messages where endpoints require authentication with a valid JWT:
-  - GET /api/messages
-  - GET /api/messages/:id
-  - GET /api/messages?status=unread
-  - PATCH /api/messages/:id
-  - DELETE /api/messages/:id
-- Step 6. Users & Roles for role-based "admin only"
+- Step 6. Users & Roles for role-based "admin only" - OPTIONAL
   - GET /api/users
   - GET /api/users/:id
   - POST /api/users
   - PATCH /api/users/:id
+
+  ***
+
+## [0.6.0] - 2026-08-21
+
+### Added
+
+- Another protected CRUD flow where endpoints require authentication with a valid JWT:
+  - GET /api/messages (all)
+  - GET /api/messages?status=unread / ?status=read / ?status=handled
+  - GET /api/messages/:id
+  - PATCH /api/messages/:id
+  - DELETE /api/messages/:id
 
 ---
 
