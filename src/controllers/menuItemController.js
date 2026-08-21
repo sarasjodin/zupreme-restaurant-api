@@ -37,11 +37,11 @@ export async function getMenuItems(req, res) {
       ORDER BY mc.sort_order, mi.sort_order
     `);
 
-    res.status(200).json(rows.map(formatMenuItem));
+    return res.status(200).json(rows.map(formatMenuItem));
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
 
@@ -79,10 +79,10 @@ export async function getMenuItemById(req, res) {
       return res.status(404).json({ error: 'Menu item not found' });
     }
 
-    res.status(200).json(formatMenuItem(rows[0]));
+    return res.status(200).json(formatMenuItem(rows[0]));
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
 
@@ -104,7 +104,8 @@ export async function createMenuItem(req, res) {
   // Statuskoder: 201, 400, 409, 500
 
   try {
-    // Använder tomt objekt om req.body saknas
+    // req.body är redan validerad av validateCreateMenuItem middleware
+    // kan ej vara tom nu
     const {
       name,
       description = null,
@@ -113,7 +114,7 @@ export async function createMenuItem(req, res) {
       is_available = true,
       sort_order = 0,
       category_id,
-    } = req.body ?? {};
+    } = req.body;
 
     // Kontrollerar om category_id finns i menu_categories innan en menyartikel försöker skapas
     const [categories] = await pool.query(
@@ -362,10 +363,9 @@ export async function deleteMenuItemById(req, res) {
     const id = req.menuItemId;
 
     // Raderar menyartikeln från databasen
-    const [result] = await pool.query(
-      'DELETE FROM menu_items WHERE id = ?',
-      [id],
-    );
+    const [result] = await pool.query('DELETE FROM menu_items WHERE id = ?', [
+      id,
+    ]);
 
     // Kontrollerar om någon menyartikel raderades
     if (result.affectedRows === 0) {
