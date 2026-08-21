@@ -10,19 +10,21 @@ import {
 import { requireAuth } from '../middleware/authMiddleware.js';
 
 import {
+  validateCreateMessage,
   validateMessageById,
   validateUpdateMessage,
+  validateMessageStatus,
 } from '../middleware/messageMiddleware.js';
 
 const router = Router();
 
 // Public route
-router.post('/', createMessage);
+router.post('/', validateCreateMessage, createMessage);
 
 // Authenticated routes
-router.get('/', requireAuth, getMessages); // Not yet implemented
+router.get('/', requireAuth, validateMessageStatus, getMessages);
 
-router.get('/:id', requireAuth, validateMessageById, getMessageById); // Not yet implemented
+router.get('/:id', requireAuth, validateMessageById, getMessageById);
 
 router.patch(
   '/:id',
@@ -30,8 +32,8 @@ router.patch(
   validateMessageById,
   validateUpdateMessage,
   updateMessageById,
-); // Not yet implemented
+);
 
-router.delete('/:id', requireAuth, validateMessageById, deleteMessageById); // Not yet implemented
+router.delete('/:id', requireAuth, validateMessageById, deleteMessageById);
 
 export default router;

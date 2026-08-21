@@ -1,67 +1,13 @@
 import pool from '../config/database.js';
 
 export async function createMessage(req, res) {
-  // Input: req.body.name, req.body.email, req.body.subject, req.body.message
-  // Returnera: id, name, email, subject, message, status, created_at
-  // Tabeller: messages
+  // Input: validerad av validateCreateMessage middleware
+  // Returnerar: id, name, email, subject, message, status, created_at
+  // Tabell: messages
   // Statuskoder: 201, 400, 500
-  // Validering: name, email, subject och message:
-  //    - måste finnas
-  //    - inte vara tomma
-  //    - rätt typ - string
-  //    - max antal tecken
-  //    - email måste vara giltig
   try {
-    // Använder tomt objekt om req.body saknas
-    const { name, email, subject, message } = req.body ?? {};
-    // Validering: name, email, subject och message måste finnas och inte vara tomma
-    if (
-      typeof name !== 'string' ||
-      typeof email !== 'string' ||
-      typeof subject !== 'string' ||
-      typeof message !== 'string' ||
-      !name.trim() ||
-      !email.trim() ||
-      !subject.trim() ||
-      !message.trim()
-    ) {
-      return res
-        .status(400)
-        .json({ error: 'Name, email, subject and message are required' });
-    }
-
-    if (name.trim().length > 100) {
-      return res.status(400).json({
-        error: 'Name must not exceed 100 characters',
-      });
-    }
-
-    if (email.trim().length > 254) {
-      return res.status(400).json({
-        error: 'Email must not exceed 254 characters',
-      });
-    }
-
-    // Validering av e-postadressens format
-    const emailParts = email.trim().split('@');
-
-    if (
-      emailParts.length !== 2 ||
-      !emailParts[0] ||
-      !emailParts[1].includes('.') ||
-      emailParts[1].startsWith('.') ||
-      emailParts[1].endsWith('.')
-    ) {
-      return res.status(400).json({
-        error: 'Invalid email address',
-      });
-    }
-
-    if (subject.trim().length > 150) {
-      return res.status(400).json({
-        error: 'Subject must not exceed 150 characters',
-      });
-    }
+    // Hämtar redan validerad data från request body
+    const { name, email, subject, message } = req.body;
 
     const [result] = await pool.query(
       `
@@ -87,20 +33,183 @@ export async function createMessage(req, res) {
       [result.insertId],
     );
 
-    res.status(201).json(rows[0]);
+    return res.status(201).json(rows[0]);
   } catch (error) {
     console.error('Could not create message:', error.message);
 
-    res.status(500).json({
+    return res.status(500).json({
       error: 'Internal server error',
     });
   }
 }
 
-export async function getMessages(req, res) {} // Not yet implemented
+export async function getMessages(req, res) {
+  // Input: valfri req.query.status
+  // Returnerar: lista med meddelanden
+  // Tabeller: messages
+  // Filter: valfri status
+  // Statuskoder: 200, 400, 401, 500 (GET)
+  try {
+    const { status } = req.query;
 
-export async function getMessageById(req, res) {} // Not yet implemented
+    // Om status finns filtreras meddelandena, annars hämtas alla i nästa SELECT-sats
+    if (status) {
+      const [rows] = await pool.query(
+        `
+          SELECT
+            id,
+            name,
+            email,
+            subject,
+            message,
+            status,
+            created_at
+          FROM messages
+          WHERE status = ?
+          ORDER BY created_at DESC
+        `,
+        [status],
+      );
 
-export async function updateMessageById(req, res) {} // Not yet implemented
+      return res.status(200).json(rows);
+    }
 
-export async function deleteMessageById(req, res) {} // Not yet implemented
+    // Hämtar alla meddelanden
+    const [rows] = await pool.query(`
+      SELECT
+        id,
+        name,
+        email,
+        subject,
+        message,
+        status,
+        created_at
+      FROM messages
+      ORDER BY created_at DESC
+    `);
+
+    return res.status(200).json(rows);
+  } catch (error) {
+    console.error('Could not get messages:', error.message);
+
+    return res.status(500).json({
+      error: 'Internal server error',
+    });
+  }
+}
+
+export async function getMessageById(req, res) {
+  const id = req.messageId;
+
+  try {
+    const [rows] = await pool.query(
+      `
+      SELECT
+        id,
+        name,
+        email,
+        subject,
+        message,
+        status,
+        created_at
+      FROM messages
+      WHERE id = ?
+    `,
+      [id],
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Message not found' });
+    }
+
+    return res.status(200).json(rows[0]);
+  } catch (error) {
+    console.error('Could not get message by ID:', error.message);
+
+    return res.status(500).json({
+      error: 'Internal server error',
+    });
+  }
+}
+
+// Uppdaterar status för ett meddelande baserat på ID
+// Validering av ID och status sker i middleware
+// PATCH för messages används endast för att ändra status
+// Övriga meddelandefält ska behållas orörda
+export async function updateMessageById(req, res) {
+  try {
+    // Hämtar validerat message ID från middleware
+    const id = req.messageId;
+
+    const { status } = req.body;
+
+    // Kontrollerar att meddelandet finns
+    const [existingMessages] = await pool.query(
+      'SELECT id FROM messages WHERE id = ?',
+      [id],
+    );
+
+    if (existingMessages.length === 0) {
+      return res.status(404).json({
+        error: 'Message not found',
+      });
+    }
+
+    // Uppdaterar meddelandets status
+    await pool.query('UPDATE messages SET status = ? WHERE id = ?', [
+      status,
+      id,
+    ]);
+
+    // Hämtar och returnerar det uppdaterade meddelandet
+    const [updatedMessages] = await pool.query(
+      `
+        SELECT
+          id,
+          name,
+          email,
+          subject,
+          message,
+          status,
+          created_at,
+          updated_at
+        FROM messages
+        WHERE id = ?
+      `,
+      [id],
+    );
+
+    return res.status(200).json(updatedMessages[0]);
+  } catch (error) {
+    console.error('Could not update message:', error.message);
+
+    return res.status(500).json({
+      error: 'Internal server error',
+    });
+  }
+}
+
+export async function deleteMessageById(req, res) {
+  try {
+    // Hämtar validerat message ID från middleware
+    const id = req.messageId;
+
+    const [result] = await pool.query('DELETE FROM messages WHERE id = ?', [
+      id,
+    ]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        error: 'Message not found',
+      });
+    }
+
+    return res.status(204).send();
+  } catch (error) {
+    console.error('Could not delete message:', error.message);
+
+    return res.status(500).json({
+      error: 'Internal server error',
+    });
+  }
+}
