@@ -12,7 +12,7 @@ app.use(
   cors({
     origin: [
       'http://localhost:5173',
-      'http://127.0.0.1:5173',
+      'http://127.0.0.1:5501',
       'https://zupreme-restaurant.netlify.app',
       'https://zupreme-restaurant-admin.sarasjodin.se',
     ],
