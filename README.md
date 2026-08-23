@@ -2,6 +2,9 @@
 
 Backend-API för Zupreme Restaurant, byggt med Node.js, Express och MySQL samt installerat på en VPS
 
+<img width="515" height="512" alt="image" src="https://github.com/user-attachments/assets/e2f98c35-ac55-46cd-ac26-93352a4da364" />
+
+
 Projektet använder:
 
 - Node.js
@@ -11,58 +14,25 @@ Projektet använder:
 - JWT
 - bcrypt
 
-## Lokal databas
+## Docker Compose – lokal miljö och produktion
 
-### Rensa lokal databas
+| Åtgärd | Lokal miljö | Produktion |
+| --- | --- | --- |
+| **Bygg och starta** | `docker compose -f docker-compose.local.yml up -d --build` | `docker compose -f docker-compose.yml up -d --build` |
+| **Stäng ner miljön** | `docker compose -f docker-compose.local.yml down` | `docker compose -f docker-compose.yml down` |
+| **Starta miljön igen** | `docker compose -f docker-compose.local.yml up -d` | `docker compose -f docker-compose.yml up -d` |
+| **Radera databas/volymer** | `docker compose -f docker-compose.local.yml down -v` | `docker compose -f docker-compose.yml down -v` |
+| **Seeda användare** | `docker compose -f docker-compose.local.yml exec api node database/scripts/03-seed-users.js` | `docker compose -f docker-compose.yml exec api node database/scripts/03-seed-users.js` |
 
-> [!IMPORTANT]
-> Detta raderar all data i den lokala MySQL-databasen
+### Bygg och starta
 
-```bash
-docker compose -f docker-compose.local.yml down -v
-```
+Vid första uppstart från en tom databas körs `01-schema.sql` och `02-seed.sql` när MySQL-volymen skapas.
 
-### Bygg och starta lokalt
-
-Detta bygger containrarna och kör 01-schema.sql och 02-seed.sql när databasen skapas från början
-
-```bash
-docker compose -f docker-compose.local.yml up --build
-```
-
-### Seeda lokala användare
-
-Vänta någon minut tills MySQL är healthy. Kör sedan från projektroten:
+För lokal utveckling:
 
 ```bash
-docker compose -f docker-compose.local.yml exec api node database/scripts/03-seed-users.js
-```
+docker compose -f docker-compose.local.yml up -d --build
 
-## Produktionsdatabas
-
-### Rensa produktionsdatabas
-
-> [!CAUTION]
-> Detta raderar all data i produktionsdatabasen
-
-Använd endast detta om databasen verkligen ska tas bort
-
-```bash
-docker compose -f docker-compose.yml down -v
-```
-
-### Bygg och starta produktion
-
-```bash
-docker compose -f docker-compose.yml up --build
-```
-
-### Seeda produktionsanvändare
-
-Vänta någon minut tills MySQL är healthy. Kör sedan från projektroten:
-
-```bash
-docker compose -f docker-compose.yml exec api node database/scripts/03-seed-users.js
 ```
 
 ### Seed-filer
@@ -75,6 +45,7 @@ database/
 ├── 02-seed.sql
 └── scripts/
         └── 03-seed-users.js
+
 ```
 
 - 01-schema.sql skapar databastabellerna
@@ -93,21 +64,21 @@ database/
 
 | Method | Endpoint          | Description                |
 | ------ | ----------------- | -------------------------- |
-| `POST` | `/api/auth/login` | Log in and receive a JWT   |
-| `GET`  | `/api/auth/me`    | Get the authenticated user |
+| `POST` | [`/api/auth/login`](https://zupreme-restaurant-admin.sarasjodin.se/) | Log in and receive a JWT   |
+| `GET`  | [`/api/auth/me`](https://zupreme-restaurant-api.sarasjodin.se/api/auth/me)    | Get the authenticated user |
 
 ### Menu categories
 
 | Method | Endpoint               | Description                   |
 | ------ | ---------------------- | ----------------------------- |
-| `GET`  | `/api/menu-categories` | Get all fixed menu categories |
+| `GET`  | [`/api/menu-categories`](https://zupreme-restaurant-api.sarasjodin.se/api/menu-categories) | Get all fixed menu categories |
 
 ### Menu
 
 | Method   | Endpoint              | Description        |
 | -------- | --------------------- | ------------------ |
-| `GET`    | `/api/menu-items`     | Get all menu items |
-| `GET`    | `/api/menu-items/:id` | Get a menu item    |
+| `GET`    | [`/api/menu-items`](https://zupreme-restaurant-api.sarasjodin.se/api/menu-items)     | Get all menu items |
+| `GET`    | [`/api/menu-items/:id`](https://zupreme-restaurant-api.sarasjodin.se/api/menu-items/4) | Get a menu item    |
 | `POST`   | `/api/menu-items`     | Create a menu item |
 | `PATCH`  | `/api/menu-items/:id` | Update a menu item |
 | `DELETE` | `/api/menu-items/:id` | Delete a menu item |
@@ -116,13 +87,13 @@ database/
 
 | Method   | Endpoint            | Description      |
 | -------- | ------------------- | ---------------- |
-| `POST`   | `/api/messages`     | Send a message   |
+| `POST`   | [`/api/messages`](https://zupreme-restaurant-api.sarasjodin.se/api/messages)     | Send a message   |
 | `GET`    | `/api/messages`     | Get all messages |
 | `GET`    | `/api/messages/:id` | Get a message    |
 | `PATCH`  | `/api/messages/:id` | Update a message |
 | `DELETE` | `/api/messages/:id` | Delete a message |
 
-### Users
+### Users (ännu inte implementerat)
 
 | Method  | Endpoint         | Description   |
 | ------- | ---------------- | ------------- |
